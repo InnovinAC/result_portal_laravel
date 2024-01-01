@@ -1,6 +1,3 @@
-
-
-<hehehe>
 <form id='edit' action="<?php echo e(route('edit-subject', $subject->id)); ?>"  method="POST">
     <?php echo csrf_field(); ?>
 
@@ -37,12 +34,16 @@ unset($__errorArgs, $__bag); ?>
      <script>
         $('#submit').click(function () {
             let counter = 0
-            let text = ['loading.', 'loading..', 'loading...', 'loading.', 'loading..', 'loading...']
+            let text = ['loading.', 'loading..', 'loading...']
             const change = () => {
                 $('#submit').text(text[counter])
-                counter ++
+                if(text.length == (counter + 1)) {
+                    counter=0
+                } else {
+                    counter++
+                }
             }
-            setInterval(change, 250);
+            setInterval(change, 200);
             setTimeout(() => {
                 $('#edit').submit()
             }, 1000)

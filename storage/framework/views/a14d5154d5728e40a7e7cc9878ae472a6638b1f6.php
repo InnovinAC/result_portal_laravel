@@ -25,6 +25,7 @@
 
         <div class="form-floating mb-3">
           <input
+              required
             value="<?php echo e(old('subject_name.*')); ?>"
             type="text"
             class="<?php $__errorArgs = ['subject_name.*'];
@@ -50,11 +51,8 @@ endif;
 unset($__errorArgs, $__bag); ?>
         </div>
 
-        <div id="newSubjects">
+        <div id="newSubjects" class="row gap-3">
         </div>
-
-
-
 
                <div class="form-group mt-3">
                <button type="submit" class="btn btn-primary">Submit</button>
@@ -76,14 +74,24 @@ unset($__errorArgs, $__bag); ?>
 <?php $__env->startPush('scripts'); ?>
 
     <script>
+        if (!window?.SubjectsCount) {
+            window.SubjectsCount = 0;
+        }
 
-        $('#new').click(function() {
-            console.log(5);
-            var html = '<div class="form-floating mb-3">' +
-                '<input value="" type="text" class="' + 'form-control" name="subject_name[]" ' + 'id="name" placeholder="">' +
-            '<label for="name">Subject Name <span class="text-vermillion">*</'+ 'span></label>';
+
+        $('#new').click(async function() {
+
+            const html = `<div id="subject-${window?.SubjectsCount}" class="col-12 row"><div class="col-11"><div class="form-floating">` +
+                '<input required value="" type="text" class="' + 'form-control" name="subject_name[]" ' + 'id="name" placeholder="">' +
+            `<label for="name">Subject Name <span class="text-vermillion">*</'+ 'span></label></div></div><a id="subject-${window?.SubjectsCount}-remover" class="btn d-flex flex-column justify-content-center btn-danger col-1 align-items-center" id="new"><i class="fa-light fa-minus-circle"></i></a></div>`;
             $('#newSubjects').append(html);
+            const count = window.SubjectsCount;
+            $(`#subject-${count}-remover`).on('click', (e) => {
+                $(`#subject-${count}`).fadeOut(300, function() {this.remove();});
+            })
+            window.SubjectsCount++;
         });
+
 
         </script>
 
