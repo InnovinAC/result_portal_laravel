@@ -17,12 +17,14 @@ use App\Models\Term;
 use App\Models\User;
 use Auth;
 use Hash;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
+    private Arrayable $user;
     protected $auth;
 
     public function __construct()
@@ -561,6 +563,7 @@ class AdminController extends Controller
     {
 
         if ($request->isMethod('post')) {
+            $names = $request->subject_name;
 
             //     request()->validate([
             //         'subject_name' => 'array',
@@ -569,23 +572,23 @@ class AdminController extends Controller
             //     ],
             // );
 
-            if (count($request->subject_name) > 0) {
+            if (count($names) > 0) {
                 $i = 0;
-                foreach ($request->subject_name as $name) {
-
-                    if (!Subject::where('name', $name)->first()) {
+                $emptySubjectsCount = 0;
+                foreach ($names as $name) {
+                    if (!$name) {
+                        ++$emptySubjectsCount;
+                    } else if (!Subject::where('name', $name)->first()) {
                         Subject::create(['name' => ucwords($name)]);
                         ++$i;
-
                     }
 
                 }
                 switch ($i) {
                     case 0:
-                        return back()->with('error', 'No unique subjects found.');
-
+                        return back()->with('error', 'No unique subjects found. <b>'.$emptySubjectsCount. '</b> subject(s) empty.');
                     default:
-                        return back()->with('success', '<b>' . $i . '</b> unique subject(s) created successfully');
+                        return back()->with('success', '<b>' . $i . '</b> unique subject(s) created successfully <b>'.$emptySubjectsCount. '</b> subject(s) empty.');
 
                 }
 
@@ -601,27 +604,26 @@ class AdminController extends Controller
     public function editSubject($id)
     {
         if (request()->isMethod('post')) {
-            request()->validate([
-                'name' => [
-                    'required',
-                    Rule::unique('subjects', 'name')->ignore($id),
-                ],
-            ]);
+            $name = request()->name;
+            if (!$name) {
+                return back()->with('error', 'Name cannot be empty');
+            }
+            if (Subject::query()->where('id', '!=', $id)->where('name', $name)->first()) {
+                return back()->with('error', 'Subject name already exists');
+            }
 
             $subject = Subject::find($id);
-            $subject->name = ucwords(request()->name);
+            $subject->name = ucwords($name);
             $subject->save();
 
             return back()->with('success', 'Subject edited successfully');
-
         }
         try {
             $data['subject'] = Subject::findorFail($id);
-
+            return view('admin.edit.subject', $data);
         } catch (ModelNotFoundException $e) {
             return back()->with('error', 'Subject does not exist');
         }
-        return view('admin.edit.subject', $data);
     }
 
     /*
@@ -1037,7 +1039,7 @@ class AdminController extends Controller
     }
 
     // Start Create Result Method
-    public function createResult(Request $request)
+    public function createResult(Request $request): Request
     {
 
         if ($request->isMethod('post')) {
