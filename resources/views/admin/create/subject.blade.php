@@ -74,7 +74,7 @@
             $('#newSubjects').append(html);
             const count = window.SubjectsCount;
             $(`#subject-${count}-remover`).on('click', (e) => {
-                $(`#subject-${count}`).fadeOut(300, function() {this.remove();});
+                $(`#subject-${count}`).fadeOut(300, function() {$(this).remove();});
             })
             window.SubjectsCount++;
         });

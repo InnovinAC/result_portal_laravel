@@ -139,7 +139,7 @@
             <label for="checkAll" class="control-label">Check All</label> <em class="m-4">With Selected:</em>
             &nbsp;&nbsp; <button type="button" id="multi-delete-button" class="btn btn-sm btn-vermillion"
                 class="text-vermillion"><i class="fa-light fa-trash-alt"></i> Delete</button>
-
+            <button class="d-none" id="submit-multiple" type="submit"></button>
             </form>
         @endif
         </div>
@@ -238,7 +238,6 @@
                 $('#multi-delete-button').click(function() {
                     const item = '@yield('itemName')'
                     const count = document.querySelectorAll('.checkItem:checked').length
-                    console.log(count)
 
 
                     if (count > 0) {
@@ -253,7 +252,7 @@
                             })
                             .then((result) => {
                                 if (result.value) {
-                                    $('#multi-delete-form').submit()
+                                    $('#submit-multiple')?.click(); // click the submit button
                                 }
                             })
 
@@ -262,8 +261,8 @@
                         Swal.fire({
                             title: '<strong>No!</strong>',
                             text:`You must select at least one ${item}.`,
-                            icon: 'error',
-                            confirmButtonColor: 'blue'
+                            icon: 'info',
+                            confirmButtonColor: 'blue',
                         })
 
                     }
