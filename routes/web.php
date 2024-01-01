@@ -56,7 +56,7 @@ Route::get('subjects', 'showSubjects')->name('subjects');
 
 Route::any('subjects/{id}/edit', 'editSubject')->name('edit-subject');
 
-Route::post('subjects/{id}/delete', 'deleteSubject')->name('delete-subject');
+Route::any('subjects/{id}/delete', 'deleteSubject')->name('delete-subject');
 
 
 Route::any('combos/create', 'createSubjectCombo')->name('create-subject-combo');
@@ -77,7 +77,7 @@ Route::get('students', 'showStudents')->name('students');
 
 Route::any('students/{id}/edit', 'editStudent')->name('edit-student');
 
-Route::post('students/{id}/delete', 'deleteStudent')->name('delete-student');
+Route::any('students/{id}/delete', 'deleteStudent')->name('delete-student');
 
 
 //Results

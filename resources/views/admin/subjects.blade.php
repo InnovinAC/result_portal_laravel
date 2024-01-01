@@ -62,12 +62,12 @@
 
             // Delete subject information
             $(document).on('click', '#delete', function() {
-                var id = $(this).data('id');
-                var url = "{{ route('delete-subject', ['id' => ':id']) }}";
-                url = url.replace(':id', id);
-                var el = this;
-                var token = $('meta[name="csrf_token"]').attr('content');;
-                var name = $(this).data('name');
+                const id = $(this).data('id');
+                let url = "{{ route('delete-subject', ['id' => ':id']) }}".replace(':id', id);
+                // url = url.replace(':id', id);
+                const el = this;
+                const token = $('meta[name="csrf_token"]').attr('content');;
+                const name = $(this).data('name');
                 Swal.fire({
                     title: 'Are you sure? <h6>(Page closes in 10 seconds)</h6>',
                     html: "<b>NB:</b> <i>Doing this will also delete the subject <b>" + name +
@@ -102,7 +102,6 @@
 
                             })
                             .fail(function() {
-                                console.log(0)
                                 swal.fire('Damn!',
                                     'Beats me, but something went wrong! Try again.',
                                     'error');

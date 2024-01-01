@@ -24,7 +24,7 @@ use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
-    private Arrayable $user;
+    private Arrayable | null $user;
     protected $auth;
 
     public function __construct()
@@ -474,87 +474,93 @@ class AdminController extends Controller
     // Delete Subject Method
     public function deleteSubject(Request $request, $id)
     {
-        // get all results as well as their ids
-        $results = Result::pluck('result', 'id')->toArray();
+        try {
+            // get all results as well as their ids
+            $results = Result::pluck('result', 'id')->toArray();
 
-        if ($id == 'multiple') {
-            if ($request->delete) {
-                foreach ($request->delete as $id) {
+            if ($id == 'multiple') {
+//                return back()->with('success', 'yeah');
+                if ($request->delete) {
+                    foreach ($request->delete as $id) {
 
-                    // loop through the results
-                    foreach ($results as $result) {
+                        // loop through the results
+                        foreach ($results as $result) {
 
-                        // convert the json to array
-                        $result = json_decode($result, JSON_FORCE_OBJECT);
+                            // convert the json to array
+                            $result = json_decode($result, JSON_FORCE_OBJECT);
 
-                        // if the subject exists in the result
-                        if (array_key_exists($id, $result)) {
-                            // start working on editing the result
-                            $new_result = Result::find(array_search(json_encode($result), $results));
+                            // if the subject exists in the result
+                            if (array_key_exists($id, $result)) {
+                                // start working on editing the result
+                                $new_result = Result::find(array_search(json_encode($result), $results));
 
-                            // remove the subject(as well as scores) from the result array
-                            unset($result[$id]);
+                                // remove the subject(as well as scores) from the result array
+                                unset($result[$id]);
 
-                            // Re-calculate average
-                            $scores_sum_array = collect();
-                            foreach (array_keys($result) as $key) {
-                                $sum = array_sum($result[$key]);
-                                $scores_sum_array->push($sum);
+                                // Re-calculate average
+                                $scores_sum_array = collect();
+                                foreach (array_keys($result) as $key) {
+                                    $sum = array_sum($result[$key]);
+                                    $scores_sum_array->push($sum);
+                                }
+
+                                // update the average and result with new values
+                                $new_result->result = json_encode($result);
+                                $new_result->average = $scores_sum_array->avg();
+                                $new_result->save();
+
                             }
+                        }
 
-                            // update the average and result with new values
-                            $new_result->result = json_encode($result);
-                            $new_result->average = $scores_sum_array->avg();
-                            $new_result->save();
+                        if (Subject::destroy($id)) {
+                            SubjectCombination::where('subject_id', $id)->delete();
 
                         }
                     }
+                    return back()->with('success', 'Selected subjects have been deleted successfully.');
+                }
 
-                    if (Subject::destroy($id)) {
-                        SubjectCombination::where('subject_id', $id)->delete();
+                return back()->with('error', 'No subjects were selected.');
 
+            }
+
+            // loop through the results
+            foreach ($results as $result) {
+
+                // convert the json to array
+                $result = json_decode($result, JSON_FORCE_OBJECT);
+
+                // if the subject exists in the result
+                if (array_key_exists($id, $result)) {
+                    // start working on editing the result
+                    $new_result = Result::find(array_search(json_encode($result), $results));
+
+                    // remove the subject(as well as scores) from the result array
+                    unset($result[$id]);
+
+                    // Re-calculate average
+                    $scores_sum_array = collect();
+                    foreach (array_keys($result) as $key) {
+                        $sum = array_sum($result[$key]);
+                        $scores_sum_array->push($sum);
                     }
+
+                    // update the average and result with new values
+                    $new_result->result = json_encode($result);
+                    $new_result->average = $scores_sum_array->avg();
+                    $new_result->save();
+
                 }
-                return back()->with('success', 'Selected subject combinations have been deleted successfully.');
             }
 
-            return back()->with('error', 'No subjects were selected.');
-        }
-
-        // loop through the results
-        foreach ($results as $result) {
-
-            // convert the json to array
-            $result = json_decode($result, JSON_FORCE_OBJECT);
-
-            // if the subject exists in the result
-            if (array_key_exists($id, $result)) {
-                // start working on editing the result
-                $new_result = Result::find(array_search(json_encode($result), $results));
-
-                // remove the subject(as well as scores) from the result array
-                unset($result[$id]);
-
-                // Re-calculate average
-                $scores_sum_array = collect();
-                foreach (array_keys($result) as $key) {
-                    $sum = array_sum($result[$key]);
-                    $scores_sum_array->push($sum);
-                }
-
-                // update the average and result with new values
-                $new_result->result = json_encode($result);
-                $new_result->average = $scores_sum_array->avg();
-                $new_result->save();
-
+            // delete the subject
+            if (Subject::destroy($id)) {
+                SubjectCombination::where('subject_id', $id)->delete();
+                // echo output to ajax
+                return 1;
             }
-        }
-
-        // delete the subject
-        if (Subject::destroy($id)) {
-            SubjectCombination::where('subject_id', $id)->delete();
-            // echo output to ajax
-            return 1;
+        } catch (\Exception$e) {
+//            var_dump($e);
         }
     }
 
