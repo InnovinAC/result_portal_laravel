@@ -1,1 +1,0 @@
-<?php /**PATH C:\xampp\htdocs\result_laravel\resources\views\messages.blade.php ENDPATH**/ ?>
