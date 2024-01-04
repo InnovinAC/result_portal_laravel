@@ -24,7 +24,7 @@ use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
-    private Arrayable | null $user;
+    private Arrayable|null $user;
     protected $auth;
 
     public function __construct()
@@ -65,6 +65,9 @@ class AdminController extends Controller
             $data['subject_combos_count'] = SubjectCombination::count();
             $data['sessions_count'] = Session::count();
             $data['teachers_count'] = User::get()->except($this->user->id)->count();
+            if(Setting::first()->use_pins == 'yes') {
+                $data['pins_count'] = Pin::count();
+            }
 
             // For the form to quickly check a student's result
             $data['school_classes'] = SchoolClass::get();
@@ -102,9 +105,7 @@ class AdminController extends Controller
             // check if user exists
             if (!User::where('username', $request->user)->first()) {
                 return back()->withInput(request()->only('user'))->with('error', 'User does not exist');
-            }
-
-            // if user exists:
+            } // if user exists:
             elseif ($user = User::where('username', $request->user)->first()) {
 
                 // check if their password is correct
@@ -118,9 +119,7 @@ class AdminController extends Controller
 
             }
 
-        }
-
-        // if user is already logged in:
+        } // if user is already logged in:
         elseif ($this->user) {
             return redirect()->route('dashboard')->with('info', 'You are already logged in');
         }
@@ -592,9 +591,9 @@ class AdminController extends Controller
                 }
                 switch ($i) {
                     case 0:
-                        return back()->with('error', 'No unique subjects found. <b>'.$emptySubjectsCount. '</b> subject(s) empty.');
+                        return back()->with('error', 'No unique subjects found. <b>' . $emptySubjectsCount . '</b> subject(s) empty.');
                     default:
-                        return back()->with('success', '<b>' . $i . '</b> unique subject(s) created successfully <b>'.$emptySubjectsCount. '</b> subject(s) empty.');
+                        return back()->with('success', '<b>' . $i . '</b> unique subject(s) created successfully <b>' . $emptySubjectsCount . '</b> subject(s) empty.');
 
                 }
 
@@ -896,6 +895,7 @@ class AdminController extends Controller
         return view('admin.edit.password');
 
     }
+
     // End Edit Password
 
     public function changeSettings(Request $request)
