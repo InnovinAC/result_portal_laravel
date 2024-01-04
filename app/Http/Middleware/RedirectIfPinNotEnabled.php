@@ -15,7 +15,7 @@ class RedirectIfPinNotEnabled
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next): Closure
+    public function handle(Request $request, Closure $next)
     {
         if(Setting::first()->use_pins == 'no') {
             return redirect()->back()->with('warning', 'You have to enable usage of pins in the settings page first');
