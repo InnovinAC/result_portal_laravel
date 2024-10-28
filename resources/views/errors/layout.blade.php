@@ -30,17 +30,17 @@ body { background: #0414a7; }
 }
 
 .bsod {
-  padding-top: 10%;
-
+    padding-top: 10%;
+}
   .neg {
-    text-align: center;
-    color: #0414a7;
+      text-align: center;
+      color: #0414a7;
+  }
 
     .bg {
       background: #aaa;
       padding: 0 15px 2px 13px;
     }
-  }
   .title { margin-bottom: 50px; }
   .nav {
     margin-top: 35px;

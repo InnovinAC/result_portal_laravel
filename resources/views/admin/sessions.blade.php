@@ -37,7 +37,7 @@
                            data-name='{{ $session->name }}' data-id='{{ $session->id }}'><i
                                 class="fa-thin fa-trash-alt"></i>Delete</a>
                     </td>
-                </tr>
+                </tr>use(
             @endforeach
 
             </tbody>
