@@ -21,8 +21,16 @@ WORKDIR /var/www/html
 # Copy the current directory to the working directory
 COPY . .
 
+# Copy .env file
+COPY .env /var/www/html/.env
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Set necessary permissions for storage and bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Run Composer install
 RUN composer install --no-dev --optimize-autoloader
 
 # Configure Nginx
