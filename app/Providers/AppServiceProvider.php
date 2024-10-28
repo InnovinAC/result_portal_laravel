@@ -28,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //
-        $data['general'] = Setting::first();
-        
-        view()->share($data);
+//        $data['general'] = Setting::first();
+
+//        view()->share($data);
     }
 }
