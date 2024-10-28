@@ -36,8 +36,8 @@ RUN composer install --no-dev --optimize-autoloader
 # Configure Nginx
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80 for the web server
-EXPOSE 80
+# Expose port 90 for the web server
+EXPOSE 90
 
 # Start Nginx and PHP-FPM
 CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
